@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101114">
+    <meta
+      name="description"
+      content="A simple, comfortable place to watch YouTube videos."
+    >
+    <title>Playroom — YouTube, made simple</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+
+      :root {
+        color-scheme: dark;
+        font-family: "DM Sans", sans-serif;
+        color: #f5f4f1;
+        background: #101114;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        --muted: #9b9ba3;
+        --accent: #c1f17b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(ellipse at 50% 20%, rgb(78 82 73 / 16%), transparent 42%),
+          #101114;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .page {
+        width: min(100% - 48px, 1120px);
+        min-height: 100vh;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .topbar {
+        height: 88px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgb(255 255 255 / 8%);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: inherit;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.8px;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        padding-left: 2px;
+        border-radius: 10px;
+        color: #171a13;
+        background: var(--accent);
+        font-size: 13px;
+      }
+
+      .topbar-note,
+      .player-caption,
+      .footer {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .intro {
+        padding: 76px 0 42px;
+        text-align: center;
+      }
+
+      .eyebrow {
+        margin: 0 0 14px;
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.8px;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: clamp(34px, 5vw, 52px);
+        letter-spacing: -2.7px;
+        line-height: 1.1;
+      }
+
+      .intro-copy {
+        margin: 15px 0 28px;
+        color: var(--muted);
+        font-size: 16px;
+      }
+
+      .video-form {
+        width: min(100%, 680px);
+        min-height: 62px;
+        margin: 0 auto;
+        padding: 6px;
+        display: flex;
+        gap: 8px;
+        border: 1px solid rgb(255 255 255 / 12%);
+        border-radius: 15px;
+        background: #1b1c21;
+        box-shadow: 0 16px 50px rgb(0 0 0 / 22%);
+      }
+
+      .video-form:focus-within {
+        border-color: rgb(193 241 123 / 65%);
+        box-shadow: 0 0 0 3px rgb(193 241 123 / 10%);
+      }
+
+      .video-form input {
+        width: 100%;
+        min-width: 0;
+        padding: 0 15px;
+        border: 0;
+        outline: 0;
+        color: #f5f4f1;
+        background: transparent;
+        font-size: 14px;
+      }
+
+      .video-form input::placeholder {
+        color: #777881;
+      }
+
+      .video-form button {
+        flex: 0 0 auto;
+        min-height: 48px;
+        padding: 0 18px;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        border: 0;
+        border-radius: 10px;
+        color: #171a13;
+        background: var(--accent);
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+        transition: background 150ms ease, transform 150ms ease;
+      }
+
+      .video-form button:hover {
+        background: #d0f79b;
+        transform: translateY(-1px);
+      }
+
+      .video-form button:focus-visible,
+      a:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 4px;
+      }
+
+      .form-hint {
+        min-height: 20px;
+        margin: 12px 0 0;
+        color: #777881;
+        font-size: 12px;
+      }
+
+      .form-hint.is-error {
+        color: #ff9a91;
+      }
+
+      .player-section {
+        width: min(100%, 920px);
+        margin: 0 auto;
+      }
+
+      .player-frame {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgb(255 255 255 / 9%);
+        border-radius: 18px;
+        background:
+          radial-gradient(ellipse at 50% 45%, rgb(193 241 123 / 7%), transparent 40%),
+          #18191d;
+        box-shadow: 0 24px 80px rgb(0 0 0 / 32%);
+      }
+
+      .player-frame iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: #000;
+      }
+
+      .empty-state {
+        padding: 24px;
+        text-align: center;
+      }
+
+      .empty-icon {
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 17px;
+        display: grid;
+        place-items: center;
+        padding-left: 3px;
+        border: 1px solid rgb(193 241 123 / 20%);
+        border-radius: 20px;
+        color: var(--accent);
+        background: rgb(193 241 123 / 7%);
+        font-size: 18px;
+      }
+
+      .empty-title {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 17px;
+        font-weight: 600;
+      }
+
+      .empty-copy {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .player-caption {
+        padding: 15px 2px 0;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .player-caption a {
+        color: #d8d8d4;
+        text-decoration: none;
+      }
+
+      .player-caption a:hover {
+        color: var(--accent);
+      }
+
+      .footer {
+        margin-top: auto;
+        padding: 42px 0 24px;
+        text-align: center;
+        font-size: 12px;
+      }
+
+      .sr-only {
+        position: absolute;
+        overflow: hidden;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        clip-path: inset(50%);
+      }
+
+      @media (max-width: 600px) {
+        .page {
+          width: min(100% - 32px, 1120px);
+        }
+
+        .topbar {
+          height: 70px;
+        }
+
+        .topbar-note {
+          font-size: 11px;
+        }
+
+        .intro {
+          padding: 58px 0 34px;
+        }
+
+        h1 {
+          letter-spacing: -1.7px;
+        }
+
+        .intro-copy {
+          font-size: 14px;
+        }
+
+        .video-form {
+          min-height: 58px;
+          gap: 4px;
+        }
+
+        .video-form input {
+          padding: 0 9px;
+          font-size: 13px;
+        }
+
+        .video-form button {
+          min-height: 44px;
+          padding: 0 12px;
+          gap: 7px;
+          font-size: 12px;
+        }
+
+        .player-frame {
+          border-radius: 12px;
+        }
+
+        .player-caption {
+          font-size: 11px;
+        }
+
+        .footer {
+          padding-top: 32px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Playroom home">
+          <span class="brand-mark" aria-hidden="true">▶</span>
+          <span>playroom</span>
+        </a>
+        <span class="topbar-note">A little more room to watch</span>
+      </header>
+
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">YOUR VIDEO, YOUR SPACE</p>
+        <h1 id="page-title">What are we watching?</h1>
+        <p class="intro-copy">Drop in a YouTube link and get comfy.</p>
+
+        <form class="video-form" id="video-form">
+          <label class="sr-only" for="video-url">YouTube video link or ID</label>
+          <input
+            id="video-url"
+            name="video-url"
+            type="text"
+            placeholder="Paste a YouTube link or video ID"
+            autocomplete="url"
+            spellcheck="false"
+            required
+          >
+          <button type="submit">
+            <span>Play video</span>
+            <span aria-hidden="true">↗</span>
+          </button>
+        </form>
+        <p class="form-hint" id="form-message" role="status" aria-live="polite">
+          Works with YouTube videos, Shorts, and playlists.
+        </p>
+      </section>
+
+      <section class="player-section" aria-label="Video player">
+        <div class="player-frame" id="player-frame">
+          <div class="empty-state" id="empty-state">
+            <div class="empty-icon" aria-hidden="true">
+              <span>▶</span>
+            </div>
+            <p class="empty-title">Your next watch starts here</p>
+            <p class="empty-copy">Add a video above to settle in.</p>
+          </div>
+          <iframe
+            id="video-player"
+            title="YouTube video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+            hidden
+          ></iframe>
+        </div>
+        <div class="player-caption">
+          <span>Made for watching, not wandering.</span>
+          <a
+            href="https://www.youtube.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Explore YouTube <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>Videos play through YouTube’s embedded player.</span>
+      </footer>
+    </main>
+    <script>
+      const form = document.querySelector("#video-form");
+      const input = document.querySelector("#video-url");
+      const message = document.querySelector("#form-message");
+      const player = document.querySelector("#video-player");
+      const emptyState = document.querySelector("#empty-state");
+
+      const videoIdPattern = /^[A-Za-z0-9_-]{11}$/;
+      const playlistIdPattern = /^[A-Za-z0-9_-]+$/;
+      const youtubeHosts = new Set([
+        "youtube.com",
+        "www.youtube.com",
+        "m.youtube.com",
+        "music.youtube.com",
+        "youtube-nocookie.com",
+        "www.youtube-nocookie.com",
+        "youtu.be",
+        "www.youtu.be",
+      ]);
+
+      function parseVideoInput(value) {
+        const trimmed = value.trim();
+        if (videoIdPattern.test(trimmed)) {
+          return { videoId: trimmed };
+        }
+
+        let url;
+        try {
+          url = new URL(trimmed.includes("://") ? trimmed : `https://${trimmed}`);
+        } catch {
+          return null;
+        }
+
+        if (!youtubeHosts.has(url.hostname.toLowerCase())) {
+          return null;
+        }
+
+        const segments = url.pathname.split("/").filter(Boolean);
+        const shortLink = url.hostname.endsWith("youtu.be");
+        let videoId = null;
+
+        if (shortLink) {
+          videoId = segments[0] ?? null;
+        } else if (url.pathname === "/watch") {
+          videoId = url.searchParams.get("v");
+        } else if (["shorts", "embed", "live", "v"].includes(segments[0])) {
+          videoId = segments[1] ?? null;
+        }
+
+        const playlistId = url.searchParams.get("list");
+        if (videoId && !videoIdPattern.test(videoId)) {
+          return null;
+        }
+        if (playlistId && !playlistIdPattern.test(playlistId)) {
+          return null;
+        }
+        if (!videoId && !playlistId) {
+          return null;
+        }
+
+        return { videoId, playlistId };
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        if (window.location.protocol === "file:") {
+          message.textContent = "YouTube needs this page served over HTTP or HTTPS. See the README for local setup.";
+          message.classList.add("is-error");
+          return;
+        }
+
+        const result = parseVideoInput(input.value);
+
+        if (!result) {
+          message.textContent = "That link doesn’t look right. Try a YouTube video or playlist link.";
+          message.classList.add("is-error");
+          input.focus();
+          return;
+        }
+
+        const embedPath = result.videoId
+          ? `/embed/${encodeURIComponent(result.videoId)}`
+          : "/embed";
+        const embedUrl = new URL(embedPath, "https://www.youtube-nocookie.com");
+
+        if (result.playlistId) {
+          embedUrl.searchParams.set("listType", "playlist");
+          embedUrl.searchParams.set("list", result.playlistId);
+        }
+
+        player.src = embedUrl.toString();
+        player.hidden = false;
+        emptyState.hidden = true;
+        message.textContent = "Enjoy the show.";
+        message.classList.remove("is-error");
+      });
+
+      input.addEventListener("input", () => {
+        if (message.classList.contains("is-error")) {
+          message.textContent = "Works with YouTube videos, Shorts, and playlists.";
+          message.classList.remove("is-error");
+        }
+      });
+    </script>
+  </body>
+</html>
